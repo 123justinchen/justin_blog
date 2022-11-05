@@ -1,0 +1,219 @@
+{% macro section_meta(section, author) %}
+    <div class="post-meta">
+        <span class="post-date">
+            {%- if section.extra["date"] -%}
+                {{ section.extra["date"] | date(format="%Y.%m.%d") }}
+                {# end of section.date if-check #}
+            {%- endif -%}
+        </span>
+
+        <span class="post-author">
+            {%- if author -%}
+                {{ utils::author(section=section) }}
+            {%- endif -%}
+        </span>
+    </div>
+{% endmacro section_meta %}
+
+{% macro meta(page, author) %}
+    <div class="post-meta" style="display: inline-flex">
+        <span class="blog-date" style="display: inline-flex;">
+          <i class="gg-calendar" style="margin-right: 5px;"></i>
+          {%- if page.updated -%}
+          <time datetime="{{ page.updated | date(format="%Y.%m.%d") }}">
+          [Updated: {{ page.updated | date(format="%Y.%m.%d") }}]
+          </time>
+          {%- else -%}
+          <time datetime="{{ page.date | date(format="%Y.%m.%d") }}">
+          {{ page.date | date(format="%Y.%m.%d") }}
+          </time>
+          {%- endif -%}
+        </span>
+
+        {%- if author -%}
+        <span class="post-author" style="margin-left: 5px; display: inline-flex;">
+          - {{ utils::author(page=page) }}
+        </span>
+        {%- endif -%}
+    </div>
+{% endmacro meta %}
+
+{% macro taxonomies(taxonomy, disp_cat, disp_tag) %}
+
+    {% if disp_cat and disp_tag -%}
+        {% if taxonomy.categories -%}
+            {{ posts::categories(categories=taxonomy.categories) }}
+            {# end if-check for categories #}
+        {%- endif -%}
+
+        {% if taxonomy.tags -%}
+            {{ posts::tags(tags=taxonomy.tags) }}
+            {# end if-check for tags #}
+        {% endif -%}
+    {% elif disp_cat -%}
+        {% if taxonomy.categories-%}
+            {{ posts::categories(categories=taxonomy.categories) }}
+            {# end if-check for categories #}
+        {% endif -%}
+    {% elif disp_tag -%}
+        {% if taxonomy.tags -%}
+            {{ posts::tags(tags=taxonomy.tags) }}
+            {# end if-check for tags #}
+        {% endif -%}
+        {# end if-check for BOTH disp bools #}
+    {% endif -%}
+{% endmacro taxonomies %}
+
+{% macro categories(categories) %}
+    {%- for cat in categories -%}
+    <a class="label label-rounded label-secondary p-category" href="{{ get_taxonomy_url(kind="categories", name=cat ) }}">{{ cat }}</a>
+    {%- endfor -%}
+    {% endmacro categories %}
+
+{% macro tags(tags) %}
+    {% for tag in tags -%}
+        <a class="label label-rounded tag" href="{{get_taxonomy_url(kind="tags", name=tag )}}">#{{ tag }}</a>
+    {% endfor -%}
+{% endmacro tags %}
+
+{% macro parent_dir_rel_path(rel_path) %}
+  {%- set post_relative_path_array = rel_path | split(pat="/")  -%}
+  {%- set parent_dir_idx = post_relative_path_array | length - 1 -%}
+  {%- set_global parent_dir_path_array = [] -%}
+  {%- for el in post_relative_path_array %}{% if loop.index <= parent_dir_idx -%}
+  {%- set_global parent_dir_path_array = parent_dir_path_array | concat(with=el) -%}
+  {%- endif -%}
+  {%- endfor -%}
+  {{ parent_dir_path_array | join(sep="/") }}
+{% endmacro parent_dir_rel_path %}
+
+{% macro cover(page, image) %}
+{% if image is matching("[.](jpg|jpeg|png|gif)$") %}
+  {% set parent_dir_rel_path = posts::parent_dir_rel_path(rel_path=page.relative_path) | trim %}
+
+  {%- if lang == config.default_language %}
+      {% set imgpath = parent_dir_rel_path ~ "/" ~ image %}
+  {% else %}
+    {# TODO #}
+    {% set imgpath = parent_dir_rel_path ~ "/" ~ image %}
+    {# Alternative? I hope the first one will work with every case #}
+    {# set feature_image = page.components[1] ~ "/" ~ page.year ~ "/" ~ page.date ~ "-" ~ page.title ~ "/" ~ image #}
+  {% endif %}
+
+  {% set img300 = resize_image(path=imgpath, op='fill', width=300, height=150) %}
+  {% set img600 = resize_image(path=imgpath, op='fill', width=600, height=300) %}
+  {% set img900 = resize_image(path=imgpath, op='fill', width=900, height=450) %}
+  {% set img1200 = resize_image(path=imgpath, op='fill', width=1200, height=600) %}
+
+  <img
+  alt="{{ page.title | striptags }}"
+  class="post-cover
+        {% if page.extra.cover_classes %}
+        {{ page.extra.cover_classes | join(sep=' ') }}
+        {% endif %}"
+  srcset="{{ img300.url | safe }} 300w,
+	        {{ img600.url | safe }} 600w,
+	        {{ img900.url | safe }} 900w,
+ 	      {{ img1200.url | safe }} 1200w,"
+  sizes="(max-width: 800px) 90vw,
+          1200px">
+{% elif image is matching("[.](svg)$") %}
+<img class="image" loading="lazy" alt="{{ page.title }}" src="{{ page.permalink }}{{ image }}">
+{% endif %}
+
+{% endmacro cover %}
+
+{% macro card(page, full) %}
+<div class="card">
+  {% if page.extra.cover_image %}
+  {% if page.extra.cover_image is matching("[.](jpg|jpeg|png|gif)$") %}
+  {% set parent_dir_rel_path = posts::parent_dir_rel_path(rel_path=page.relative_path) | trim %}
+  {% set imgpath = parent_dir_rel_path ~ "/" ~ page.extra.cover_image %}
+
+  {% set img300 = resize_image(path=imgpath, op='fill', width=300, height=150) %}
+  {% set img600 = resize_image(path=imgpath, op='fill', width=600, height=300) %}
+  {% set img900 = resize_image(path=imgpath, op='fill', width=900, height=450) %}
+  {% set img1200 = resize_image(path=imgpath, op='fill', width=1200, height=600) %}
+
+  <div class="card-image">
+      <a href="{%- if full -%}{{ page.permalink }}{{ page.extra.cover_image }}{%- else -%}{{ page.permalink }}{% endif %}">
+        <img
+          alt="{{ page.title | striptags }}"
+          class="post-cover
+                 {% if page.extra.cover_classes %}
+                 {{ page.extra.cover_classes | join(sep=' ') }}
+                 {% endif %}"
+          srcset="{{ img300.url | safe }} 300w,
+                  {{ img600.url | safe }} 600w,
+                  {{ img900.url | safe }} 900w,
+                  {{ img1200.url | safe }} 1200w,"
+          sizes="(max-width: 800px) 90vw,
+                 1200px">
+
+      </a>
+    </div><!--./card-image-->
+    {% endif %}{# matching #}
+    {% endif %}{# cover_image #}
+
+    <div class="card-header">
+      {%- if not full -%}
+      <div class="card-subtitle text-gray">
+        {{ posts::meta(page=page, author=config.extra.show_author) }}
+      </div>
+      {%- endif -%}{# ./if not full #}
+      <div class="card-title" style="margin-top: .25rem;">
+        {%- if full -%}
+        <div class="text-center">
+          <h1 class="post-title">{{ page.title }}</h1>
+          {{ posts::meta(page=page, author=config.extra.show_author) }}
+        </div>
+        {%- else -%}
+        <h5 class="post-title"><a href="{{ page.permalink }}">{{ page.title }}</a></h5>
+        {%- endif -%}
+      </div>
+    </div><!--./card-header-->
+
+    <div class="card-body">
+      {% if full %}
+        {{ page.content | safe }}
+      {% else %}{# else show the card for listing #}
+        {% set show_read_more_btn = true %}
+
+      {%  if page.description -%}
+        {{ page.description }}
+      {% elif page.summary %}
+        {{ page.summary | striptags }}
+      {% else %}
+        {% set show_read_more_btn = false %}
+      {%  endif -%}{# ./if page.description #}
+      {% endif -%}{# endif full #}
+    </div><!--./card-body-->
+
+    <div class="card-footer">
+      <div class="columns">
+        <div class="column col-9 col-sm-7">
+          <div class="taxonomies text-left">
+            {{  posts::taxonomies(
+            taxonomy=page.taxonomies,
+            disp_cat=config.extra.show_categories,
+            disp_tag=config.extra.show_tags
+            ) }}
+          </div>
+        </div><!--./col-6-->
+        {% if not full %}
+        <div class="column col-3 col-sm-5" style="flex-direction: column-reverse;display: flex;">
+          {% if show_read_more_btn %}
+          <div style="flex-direction: column-reverse;display: flex;">
+            <a class="read-more btn btn-sm" href="{{ page.permalink }}">{{ config.extra.read_more_prompt }} →</a>
+          </div>
+          {% else %}
+          <div style="flex-direction: column-reverse;display: flex;">
+            <a class="read-more btn btn-sm" href="{{ page.permalink }}">{{ config.extra.read_post_prompt }} →</a>
+          </div>
+          {% endif -%}
+        </div><!--./col6-->
+        {% endif %}{# ./if not full #}
+        </div><!--./columns-->
+    </div><!--./card-footer-->
+</div><!--./card-->
+{% endmacro card %}

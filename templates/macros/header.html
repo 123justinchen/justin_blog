@@ -1,0 +1,37 @@
+{% macro header(grid_size) %}
+<header id="header" class="section">
+  <section class="container {{ grid_size }}">
+    <nav class="navbar">
+      <section class="navbar-section">
+        {{ menu::home() }}
+      </section><!-- ./home button -->
+
+      <section class="navbar-center hide-md"></section>
+
+      <section class="navbar-section">
+        <nav class="dropmenu animated {% if config.extra.hamburger_menu -%} hide-md {%- endif -%}">
+          {%- if config.languages -%}
+            {# TODO #}
+            {{ lang::langswitcher() }}
+          {%- endif -%}
+
+          {% if config.extra.main_menu -%}
+            {{ menu::items(menu=config.extra.main_menu) }}
+          {% endif -%}
+        </nav>
+      </section><!-- ./desktop-menu -->
+    </nav>
+  </section><!-- ./container -->
+</header>
+
+{% if config.extra.hamburger_menu %}
+<div class="mobile-menu">
+  <div class="button_container" id="toggle" onclick="openOverlay()">
+    <span class="top"></span>
+    <span class="middle"></span>
+    <span class="bottom"></span>
+  </div>
+</div><!--./mobile-menu-->
+{% endif %}
+
+{% endmacro header %}

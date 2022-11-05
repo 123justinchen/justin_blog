@@ -1,0 +1,90 @@
+# The URL the site will be built for
+base_url = "/"
+
+title = "Justin"
+description = "Another Zola theme, this time written with Spectre."
+
+# Whether to generate a RSS feed automatically
+#generate_feed = true
+#feed_filename = "rss.xml"
+
+# Whether to automatically compile all Sass files in the sass directory
+compile_sass = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = false
+
+# Built in taxonomies of huia.
+taxonomies = [
+           {name = "tags"},
+           {name = "categories"},
+]
+
+[markdown]
+# Whether to do syntax highlighting
+# Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
+highlight_code = false
+
+[extra]
+# The max-width of the page content
+grid_size = "grid-lg"
+
+# Whether to enable KaTeX or not
+katex = true
+
+# Default author for articles
+author = "Justin"
+
+show_author = true
+show_tags = true
+show_categories = true
+read_more_prompt = "read more"
+read_post_prompt = "read post"
+
+# Menu
+hamburger_menu = true
+
+# Menu items to display. You define a url and the name of the menu item.
+# NOTE: `$BASE_URL/` must be included in the url name.
+main_menu = [
+              #{url="/tags/", name="tags"},
+              #{url="/categories/", name="categories"},
+              {url="/about", name="about"},
+              #{url="/about", name="about1"},
+]
+
+# Footer
+
+# footer_tagline = "Your tagline"
+
+# Social media buttons to display. You define a url and the name of the platform.
+social_links = [
+    #{url = "https://t.me/zwitterio", name = "telegram"},
+    {url = "https://twitter.com/ichenlei", name = "twitter"},
+    {url = "https://github.com/123justinchen", name = "github"},
+    # {url = "", name = "instagram"},
+    # {url = "", name = "facebook"},
+]
+
+
+[extra.sidebar]
+# Enable/Disable sidebar
+active=true
+
+# Include a text snippet in the sidebar
+# You can format it with HTML
+text_snippet="<strong>Master’s Student</strong><br><strong>Beijing University Of Technology</strong> <br> <mark>Optical Engineering <br>Electronic information <br>Software </mark>"
+
+# Author card
+author_bio = "深度思考比勤奋更重要！"
+author_avatar = "avatar.png"
+
+# Include search bar
+# TODO template
+
+# Embed twitter iframe in the sidebar
+tweets_by="ichenlei"
+
+popular_tags=false
+archive=false
+related_posts=false #TODO

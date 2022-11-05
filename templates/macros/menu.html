@@ -1,0 +1,78 @@
+{% macro items(menu) %}
+{%- set num = menu | length -%}
+{# Check if there are menu items to render, yes if > 0 #}
+
+{% if num > 0 -%}
+<ul>
+  {%- for menu_item in menu -%}
+    <li>
+        <a href="{{ get_url(path=menu_item.url) }}">{{ menu_item.name }}</a>
+    </li>
+  {%- endfor-%}
+</ul>
+{% endif %}
+{% endmacro items %}
+
+{% macro mobile_items(menu) %}
+{%- set num = menu | length -%}
+{# Check if there are menu items to render, yes if > 0 #}
+
+{% if num > 0 -%}
+<ul class="tree treemenu treemenu-root">
+  {%- for menu_item in menu -%}
+    <li class="tree-empty">
+      <span class="toggler"></span>
+      <a href="{{ get_url(path=menu_item.url) }}">{{ menu_item.name }}</a>
+    </li>
+  {%- endfor-%}
+</ul>
+{% endif %}
+{% endmacro items %}
+
+{% macro home() %}
+<a class="site-logo" href="{{ config.base_url }}">
+  {% if config.title %}
+  <span>{{ config.title }}</span>
+  {% else %}
+  <span>Zhuia</span>
+  {% endif %}
+</a>
+{% endmacro home %}
+
+{% macro mobile() %}
+<div class="mobile-container">
+        <div class="overlay" id="overlay">
+            <div style="padding: 1rem;">
+              {{ menu::home() }}
+            </div>
+            <nav class="overlay-menu">
+              {% if config.extra.main_menu -%}
+                {{ menu::mobile_items(menu=config.extra.main_menu) }}
+              {% endif -%}
+            </nav>
+        </div>
+    </div>
+
+<script type="text/javascript">
+  var overlay = document.getElementById('overlay');
+  var toggle = document.getElementById('toggle');
+
+  function openOverlay(){
+      // Open overlay
+      if (overlay.classList.contains("open")) {
+          overlay.classList.remove("open");
+      }
+      else {
+          overlay.classList.add("open");
+      }
+
+      // Button transition
+      if (toggle.classList.contains("active")) {
+          toggle.classList.remove("active");
+      }
+      else {
+          toggle.classList.add("active");
+      }
+    }
+</script>
+{% endmacro mobile %}

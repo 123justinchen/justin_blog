@@ -1,0 +1,139 @@
+{# Macros #}
+{% import "macros/head.html" as head -%}
+{% import "macros/logo.html" as logo -%}
+{% import "macros/header.html" as header -%}
+{% import "macros/lists.html" as lists -%}
+{% import "macros/posts.html" as posts -%}
+{% import "macros/social.html" as social -%}
+{% import "macros/utils.html" as utils -%}
+{% import "macros/menu.html" as menu -%}
+{% import "macros/breadcrumbs.html" as breadcrumbs -%}
+{% import "macros/social_buttons.html" as social_buttons -%}
+{% import "macros/sidebar.html" as sidebar -%}
+{% import "macros/theme_switcher.html" as theme_switcher -%}
+{% import "macros/footer.html" as footer -%}
+{%- import "macros/pagination.html" as pagination -%}
+{# import "macros/extended_footer.html" as extended_footer -#}
+
+<!DOCTYPE html>
+<html lang="{{ config.default_language }}" data-theme="light" dir="ltr">
+  <head>
+    {%- block title -%}
+        <title>{{ config.title }}</title>
+    {%- endblock title -%}
+
+    {%- block general_meta -%}
+        {{ head::general_meta() }}
+    {%- endblock general_meta -%}
+
+    {%- block og_preview -%}
+        {{ social::og_preview() }}
+    {%- endblock og_preview -%}
+
+    {%- block twitter_preview -%}
+        {{ social::twitter_preview() }}
+    {%- endblock twitter_preview -%}
+
+    {%- block fonts -%}
+        {{ head::fonts() }}
+    {%- endblock fonts -%}
+
+    {%- block css -%}
+        {{ head::styling() }}
+    {%- endblock css -%}
+
+    {%- block favicon -%}
+        {{ head::favicon() }}
+    {%- endblock favicon -%}
+
+    {%- block rss -%}
+        {{ head::rss() }}
+    {%- endblock rss -%}
+
+    {%- block math -%}
+      {% if page.extra.katex or section.extra.katex or config.extra.katex %}
+        {{ head::katex() }}
+      {% endif %}
+    {%- endblock math -%}
+  </head>
+  <body id="top" class="sticky-footer">
+    {%- if config.extra.grid_size -%}
+    {%- set grid_size = config.extra.grid_size -%}
+    {%- else -%}
+    {%- set grid_size = 'grid-md' -%}
+    {%- endif -%}
+    <div id="page-wrapper">
+      {%- block header -%}
+          {{ header::header(grid_size=grid_size) }}
+      {%- endblock header -%}
+
+      <section id="start">
+        {%-  block main -%}
+        <section id="body-wrapper" class="section">
+          <section class="container {{ grid_size }}">
+            {%- block breadcrumbs -%}
+            {%- endblock breadcrumbs -%}
+
+            {%- if config.extra.sidebar.active -%}
+            <div class="columns">
+              <div id="item" class="column col-8 col-md-12 extra-spacing">
+                {%- block content -%}
+                <div class="blog-listing">
+                  {{ lists::list_pages(pages=paginator.pages) }}
+                </div>
+                {%- endblock content -%}
+              </div>
+              <div id="sidebar" class="column col-4 col-md-12">
+                <div class="sidebar-content">
+                  {% if config.extra.sidebar.author_bio %}
+                  {{ sidebar::author_bio(
+                  content=config.extra.sidebar.author_bio,
+                  avatar=config.extra.sidebar.author_avatar
+                  ) }}
+                  {% endif %}{# ./if author_bio #}
+                  {% if config.extra.sidebar.text_snippet -%}
+                    {{ sidebar::text_snippet(content=config.extra.sidebar.text_snippet) }}
+                  {% endif -%}
+                  {% if config.extra.sidebar.tweets_by -%}
+                    {{ sidebar::tweets_by(id=config.extra.sidebar.tweets_by) }}
+                  {% endif -%}
+                  {% if config.extra.sidebar.popular_tags -%}
+                    {{ sidebar::popular_tags() }}
+                  {% endif -%}
+                  {% if config.extra.sidebar.archives -%}
+                    {{ sidebar::archives() }}
+                  {% endif -%}
+                  {% if config.generate_feed -%}
+                    {{ sidebar::syndicate() }}
+                  {% endif -%}
+                </div><!--./sidebar-content-->
+              </div>
+            </div>
+            {% else %}
+            <div id="item" class="blog-listing">
+            {%- block content -%}
+              {{ lists::list_pages() }}
+            {%- endblock content -%}
+            </div>
+            {%- endif -%}{# sidebar active? #}
+          </section>
+        </section>
+        {%- endblock main -%}
+      </section>
+
+      {%- block postcontent -%}
+      {{ pagination::paginate(grid_size=grid_size) }}
+      {%- endblock postcontent -%}
+    </div><!-- ./page-wrapper -->
+
+    {{ menu::mobile() }}
+
+    {%- block footer -%}
+      {{ footer::footer(grid_size=grid_size) }}
+    {%- endblock footer -%}
+
+    {%- block mobile -%}
+      {# TODO #}
+    {%- endblock mobile -%}
+  </body>
+</html>
