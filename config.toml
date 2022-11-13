@@ -3,6 +3,7 @@ base_url = "/"
 
 title = "Justin"
 description = "Another Zola theme, this time written with Spectre."
+ 
 
 # Whether to generate a RSS feed automatically
 #generate_feed = true
@@ -47,7 +48,7 @@ hamburger_menu = true
 # Menu items to display. You define a url and the name of the menu item.
 # NOTE: `$BASE_URL/` must be included in the url name.
 main_menu = [
-              #{url="/tags/", name="tags"},
+              {url="/tags/", name="tags"},
               #{url="/categories/", name="categories"},
               {url="/about", name="about"},
               #{url="/about", name="about1"},
